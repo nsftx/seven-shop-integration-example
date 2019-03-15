@@ -1,0 +1,202 @@
+<!doctype html>
+<html class="no-js h-100 w-100" lang="">
+<head>
+  <meta charset="utf-8">
+  <title>7Shop Iframe</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      margin: 0;
+    }
+
+    .h-100 {
+      height: 100%;
+    }
+
+    .w-100 {
+      width: 100%;
+    }
+
+    button {
+      margin-right: 5px;
+    }
+
+    .actions {
+      margin: 10px;
+    }
+
+    iframe {
+      flex: 1;
+    }
+  </style>
+</head>
+<body class="w-100 h-100">
+    <div class="actions">
+        <button onclick="login()">Login</button>
+        <button onclick="logout()">Logout</button>
+        <button onclick="checkTicket()">Check ticket</button>
+        <button onclick="changeConnectionStatus()">Change connection status</button>
+        <button onclick="changePrinterStatus()">Change printer status</button>
+        <button onclick="endShift()">End shift</button>
+        <button onclick="startShift()">Start shift</button>
+    </div>
+    <iframe id="7shop"
+            class="w-100"
+            src="https://seven-shop-staging.7platform.com/?debugMode=true&integration=true"
+            frameborder="0">
+    </iframe>
+    <script>
+        var origin = 'https://seven-shop-staging.7platform.com/';
+        var shopFrame = document.getElementById('7shop').contentWindow;
+        var connectionStatus = false;
+        // master is current frame, slave is 7Shop app loaded using iframe tag
+        var msgSender = 'Master';
+
+        function onInit(data) {
+            // 1. Slave ready for load. Send signal slave to keep loading.
+            shopFrame.postMessage({
+                msgSender: msgSender,
+                action: 'Slave.Load',
+                data: {
+                    someData: 'data' // any data requested/needed in slave
+                }
+            }, origin);
+        }
+
+        function onLoaded(data) {
+            // 2. Ready for custom message exchange
+        }
+
+        function login() {
+            // 3. Login
+            shopFrame.postMessage({
+                action: 'User.Login',
+                msgSender: msgSender,
+                data: {
+                    userName: 'dinko2',
+                    password: 'dinko1234'
+                }
+            }, origin);
+        }
+
+        function checkTicket() {
+            shopFrame.postMessage({
+                msgSender: msgSender,
+                action: 'Tickets.Check',
+                data: {
+                    id: '0X1PASKNB'
+                }
+            }, origin);
+        }
+
+        function logout() {
+            shopFrame.postMessage({
+                msgSender: msgSender,
+                action: 'User.Logout',
+            }, origin);
+        }
+
+        function changeConnectionStatus() {
+            connectionStatus = !connectionStatus;
+            shopFrame.postMessage({
+                msgSender: msgSender,
+                action: 'Connection.UpdateState',
+                data: {
+                    status: connectionStatus
+                }
+            }, origin);
+        }
+
+        function changePrinterStatus() {
+            shopFrame.postMessage({
+                msgSender: msgSender,
+                action: 'Peripherals.UpdatePrinterState',
+                data: {
+                    valid: true,
+                    statusLevel: 'ok',
+                    errorMessage: ''
+                }
+            }, origin);
+        }
+
+        function endShift() {
+            shopFrame.postMessage({
+                msgSender: msgSender,
+                action: 'CashRegister.EndShift',
+                data: {}
+            }, origin);
+        }
+
+        function startShift() {
+            shopFrame.postMessage({
+                msgSender: msgSender,
+                action: 'CashRegister.StartShift',
+                data: {}
+            }, origin);
+        }
+
+        function onTicketPaiedIn(data) {
+            // Ticket paied in and ready for print
+        }
+
+        function onTicketCanceled(data) {
+            // Ticket paied in and ready for print
+        }
+
+        function onShifStartSucceeded(data) {
+
+        }
+
+        function onShiftStartFailed(data) {
+
+        }
+
+        function onShiftEndSucceeded(data) {
+
+        }
+
+        function onShiftEndFailed(data) {
+
+        }
+
+        window.addEventListener("message", function(event) {
+            console.info('[GG] Master: Slave message received:', event.data);
+            if (event.data.action === 'Slave.Init') {
+                onInit(event.data);
+            }
+
+            if (event.data.action === 'Slave.Loaded') {
+                onLoaded(event.data);
+            }
+
+            if (event.data.action === 'Tickets.AddSuccess') {
+                onTicketPaiedIn(event.data);
+            }
+
+            if (event.data.action === 'Tickets.CancelSuccess') {
+                onTicketPaiedIn(event.data);
+            }
+
+            if (event.data.action === 'CashRegister.ShiftStartFailed') {
+                onShiftStartFailed(event.data);
+            }
+
+            if (event.data.action === 'CashRegister.ShiftStartSucceeded') {
+                onShiftStartSucceeded(event.data);
+            }
+
+            if (event.data.action === 'CashRegister.ShiftEndSucceeded') {
+                onShiftEndSucceeded(event.data);
+            }
+
+            if (event.data.action === 'CashRegister.ShiftEndFailed') {
+                onShiftEndFailed(event.data);
+            }
+        }, false);
+    </script>
+</body>
+</html>
