@@ -1,4 +1,4 @@
-# README Boilerplate
+# 7Shop ntegration example
 
 This codebase was created to demonstrate 7Shop running in iframe as integration.
 You can check in details documentation [here](https://docs.nsoft.ba/7shop/master/tutorial-iframe-as-slave.html).

@@ -163,7 +163,7 @@
 
         }
 
-        window.addEventListener("message", function(event) {
+        window.addEventListener('message', function(event) {
             console.info('[GG] Master: Slave message received:', event.data);
             if (event.data.action === 'Slave.Init') {
                 onInit(event.data);
