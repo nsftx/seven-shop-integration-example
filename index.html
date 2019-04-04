@@ -106,7 +106,7 @@
                 msgSender: msgSender,
                 action: 'Connection.UpdateState',
                 data: {
-                    status: connectionStatus
+                  valid: connectionStatus
                 }
             }, origin);
         }
@@ -186,7 +186,7 @@
             }
 
             if (event.data.action === 'CashRegister.ShiftStartSucceeded') {
-                onShiftStartSucceeded(event.data);
+                onShifStartSucceeded(event.data);
             }
 
             if (event.data.action === 'CashRegister.ShiftEndSucceeded') {
