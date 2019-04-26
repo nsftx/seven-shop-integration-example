@@ -62,7 +62,15 @@
                 msgSender: msgSender,
                 action: 'Slave.Load',
                 data: {
-                    someData: 'data' // any data requested/needed in slave
+                    someData: 'data', // any data requested/needed in slave
+                    connection: {
+                      valid: true
+                    },
+                    printer: {
+                      valid: false,
+                      statusLevel: 'error',
+                      errorMessage: 'Printer not connected!'
+                    }
                 }
             }, origin);
         }
